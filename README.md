@@ -101,6 +101,8 @@ Install all dependencies on Ubuntu with the following commands:
 
     sudo apt install libimage-exiftool-perl yad qpdf
 
+    If you do not have Gnome installed, you may need `gir1.2-gnomedesktop-3.0` and `gir1.2-gnomedesktop-4.0` for thumbnail generation.
+
 #### Fedora and most other Linux distribution based on Fedora
 
     sudo dnf install perl-Image-ExifTool yad qpdf
