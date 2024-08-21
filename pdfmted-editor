@@ -574,6 +574,19 @@ update_filename(){
       fi
     fi
     echo "Updating file name..."
+    if [ -f "$TARGETFOLDER/$UPDATED_NAME.pdf" ];then 
+        COUNTER=0
+        echo "Avoiding clobbering..."
+        while : ; do
+            UPDATED_NAME+=" - $COUNTER"
+            echo "$TARGETFOLDER/$UPDATED_NAME.pdf"
+            if [ ! -f "$TARGETFOLDER/$UPDATED_NAME.pdf" ]; then
+                break            
+            else
+                ((COUNTER++))
+            fi
+        done
+    fi
     mv "$FILE" "$TARGETFOLDER/$UPDATED_NAME.pdf"
     ARGS[$ARGID]="$TARGETFOLDER/$UPDATED_NAME.pdf"  # make sure to update file array with
                                                     # new location
