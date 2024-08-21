@@ -424,12 +424,34 @@ gui_thumbnail_generate() {
     fi
 }
 
+find_thumbnail(){
+    full_path="file://$(realpath -s "$1")"
+    md5name=$(printf %s "${full_path// /%20}" | md5sum)
+    # could also be ~/.thumbnails
+    find ~/.cache/thumbnails/ -name "${md5name%% *}.png"
+}
+
 # assign thumbnail
 gui_thumbnail_assign(){
 
-    PREVIEWIMG="$(python3 -c "import gio; import sys; \
+    # Replaced finding thumbnail image with a bash-specific one from
+    # https://askubuntu.com/questions/1084640/where-are-the-thumbnails-of-a-new-image-located
+    # because the python version is throwing an error for me - Steven Saus
+
+    full_path="file://$(realpath -s "$FILE")"
+    md5name=$(printf %s "${full_path// /%20}" | md5sum)
+    # could be ~/.thumbnails or ~/.cache/thumbnails; failing those, fallback to the original.
+    if [ -d ~/.thumbnails/ ];then 
+        PREVIEWIMG=$(find ~/.thumbnails/ -name "${md5name%% *}.png")
+    elif [ -d ~/.cache/thumbnails/ ];then 
+    echo "hi"
+        PREVIEWIMG=$(find ~/.cache/thumbnails/ -name "${md5name%% *}.png")
+    else
+        PREVIEWIMG="$(python3 -c "import gio; import sys; \
     print gio.File(sys.argv[1]).query_info('*').get_attribute_byte_string \
     ('''thumbnail::path''')" "$FILE")"
+    fi
+
 
     if [[ "$(file -ib "$FILE" | cut -d';' -f1)" != "application/pdf" || ! -f "$PREVIEWIMG" ]]
       then
