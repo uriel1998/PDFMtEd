@@ -73,7 +73,7 @@ Available options:
 YAD_TITLE="PDFMtEd – Editor"
 WMCLASS="pdfmtededitor"
 ICON="application-pdf"
-WIDTH="800"
+WIDTH="1000"
 HEIGHT="650"
 PROGWIDTH="400"
 PROGHEIGHT="100"
