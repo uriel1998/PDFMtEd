@@ -37,6 +37,11 @@ TMPDIR="${XDG_RUNTIME_DIR:+$XDG_RUNTIME_DIR/PDFMtEd}" ; [ -z "$TMPDIR" ] && echo
 TMPDIR="${TMPDIR:-$XDG_CACHE_HOME/PDFMtEd}"
 TMPDIR="${TMPDIR:-$HOME/.cache/PDFMtEd}"
 
+
+# setting this out here to clean up at the end - Steven Saus 
+TMPIMG1="${TMPDIR}/lg_preview.png"
+
+
 ############### SETTINGS #################
 
 # Supply password for protected PDF files
@@ -444,7 +449,6 @@ gui_thumbnail_assign(){
     if [ -d ~/.thumbnails/ ];then 
         PREVIEWIMG=$(find ~/.thumbnails/ -name "${md5name%% *}.png")
     elif [ -d ~/.cache/thumbnails/ ];then 
-    echo "hi"
         PREVIEWIMG=$(find ~/.cache/thumbnails/ -name "${md5name%% *}.png")
     else
         PREVIEWIMG="$(python3 -c "import gio; import sys; \
@@ -452,12 +456,24 @@ gui_thumbnail_assign(){
     ('''thumbnail::path''')" "$FILE")"
     fi
 
-
-    if [[ "$(file -ib "$FILE" | cut -d';' -f1)" != "application/pdf" || ! -f "$PREVIEWIMG" ]]
-      then
-          PREVIEWIMG="$ICON"
+    #TODO - Toggle this instead of always on for someone who might want it off
+    #TODO - test for poppler-utils (pdftocairo) and imagemagick (convert)
+    # Enlarged temporary "thumbnail" for PDFs using poppler-utils and imagemagick
+    
+    if [[ "$(file -ib "$FILE" | cut -d';' -f1)" == "application/pdf" ]]; then
+        # pdftocairo does a wierd adding of -1 on the name of the file no matter what you do
+        # hence this hack here.
+        if [ -f "${TMPDIR}/ss_pdfmted_preview.png" ];then
+            rm "${TMPDIR}/ss_pdfmted_preview.png"
+        fi
+        pdftocairo -png "${FILE}" "${TMPDIR}/ss_pdfmted_preview"
+        convert "${TMPDIR}/ss_pdfmted_preview-1.png" -resize "464x600" "${TMPIMG1}"
+        rm "${TMPDIR}/ss_pdfmted_preview-1.png"
+        PREVIEWIMG="${TMPIMG1}"
     fi
-
+    if [[ "$(file -ib "$FILE" | cut -d';' -f1)" != "application/pdf" || ! -f "$PREVIEWIMG" ]]; then
+        PREVIEWIMG="$ICON"
+    fi
     IMAGE="$PREVIEWIMG"
     NOTIFY_ICON="$PREVIEWIMG"
 }
@@ -775,3 +791,8 @@ arg_compose_filearray "${FILEARGS[@]}"
 ################ MAIN ####################
 
 main
+
+# cleaning up mouse dropping
+if [ -f "${TMPIMG1}" ];then
+    rm "${TMPIMG1}"
+fi
