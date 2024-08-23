@@ -40,6 +40,17 @@ TMPDIR="${TMPDIR:-$HOME/.cache/PDFMtEd}"
 
 # setting this out here to clean up at the end - Steven Saus 
 TMPIMG1="${TMPDIR}/lg_preview.png"
+LARGEPREVIEW=TRUE
+
+# evaluating here whether to turn on/off larger previews if poppler-utils and 
+# imagemagick do not exist. Not included in checkdeps, because it's an 
+# optional enhancement, not a dependency.
+if [ ! -f $(which pdftocairo) ]; then
+    LARGEPREVIEW=FALSE
+fi
+if [ ! -f $(which convert) ];then
+    LARGEPREVIEW=FALSE
+fi
 
 
 ############### SETTINGS #################
@@ -457,19 +468,20 @@ gui_thumbnail_assign(){
     fi
 
     #TODO - Toggle this instead of always on for someone who might want it off
-    #TODO - test for poppler-utils (pdftocairo) and imagemagick (convert)
+
     # Enlarged temporary "thumbnail" for PDFs using poppler-utils and imagemagick
-    
-    if [[ "$(file -ib "$FILE" | cut -d';' -f1)" == "application/pdf" ]]; then
-        # pdftocairo does a wierd adding of -1 on the name of the file no matter what you do
-        # hence this hack here.
-        if [ -f "${TMPDIR}/ss_pdfmted_preview.png" ];then
-            rm "${TMPDIR}/ss_pdfmted_preview.png"
+    if [ "$LARGEPREVIEW" == "TRUE" ];then 
+        if [[ "$(file -ib "$FILE" | cut -d';' -f1)" == "application/pdf" ]]; then
+            # pdftocairo does a wierd adding of -1 on the name of the file no matter what you do
+            # hence this hack here.
+            if [ -f "${TMPDIR}/ss_pdfmted_preview.png" ];then
+                rm "${TMPDIR}/ss_pdfmted_preview.png"
+            fi
+            pdftocairo -png "${FILE}" "${TMPDIR}/ss_pdfmted_preview"
+            convert "${TMPDIR}/ss_pdfmted_preview-1.png" -resize "464x600" "${TMPIMG1}"
+            rm "${TMPDIR}/ss_pdfmted_preview-1.png"
+            PREVIEWIMG="${TMPIMG1}"
         fi
-        pdftocairo -png "${FILE}" "${TMPDIR}/ss_pdfmted_preview"
-        convert "${TMPDIR}/ss_pdfmted_preview-1.png" -resize "464x600" "${TMPIMG1}"
-        rm "${TMPDIR}/ss_pdfmted_preview-1.png"
-        PREVIEWIMG="${TMPIMG1}"
     fi
     if [[ "$(file -ib "$FILE" | cut -d';' -f1)" != "application/pdf" || ! -f "$PREVIEWIMG" ]]; then
         PREVIEWIMG="$ICON"
