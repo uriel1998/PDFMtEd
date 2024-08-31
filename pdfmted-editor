@@ -41,6 +41,7 @@ TMPDIR="${TMPDIR:-$HOME/.cache/PDFMtEd}"
 # setting this out here to clean up at the end - Steven Saus 
 TMPIMG1="${TMPDIR}/lg_preview.png"
 LARGEPREVIEW=TRUE
+OCRPOSSIBLE=TRUE
 
 # evaluating here whether to turn on/off larger previews if poppler-utils and 
 # imagemagick do not exist. Not included in checkdeps, because it's an 
@@ -51,7 +52,9 @@ fi
 if [ ! -f $(which convert) ];then
     LARGEPREVIEW=FALSE
 fi
-
+if [ ! -f $(which pdffonts) ];then 
+    OCRPOSSIBLE=FALSE
+fi
 
 ############### SETTINGS #################
 
@@ -372,15 +375,14 @@ gui_metadata_entry_multi(){
     --field="":LBL "" \
     --field="$TEXT_BTTN_PDFVWR!application-pdf!$TEXT_HOVR_PDFVWR:FBTN" \
       "bash -c \"gui_open '$FILE_ESCAPED'\"" \
-    --field="$TEXT_BTTN_SHWFLD!folder!$TEXT_HOVR_SHWFLD:FBTN" \
-      "bash -c \"gui_open '$DIRNAME_ESCAPED'\"" \
+    --field="OCR on exit? Current OCR Status: $PDF_IS_OCR ":CHK "$OCR_OPT" \
     --field="":LBL "" \
     --field="$TEXT_CHCK_SAVECH":CHK "TRUE" \
     --field="$TEXT_CHCK_RENMFL":CHK "$RENAME_OPT" \
-    --field="<b>Has OCR layer?</b>:":RO "$PDF_IS_OCR"\    
     "${MULTIDOC_FIELDS[@]}" \
     2> /dev/null)"
     RET_MAIN=$?
+    echo "${NEW_METADATA}"
     if [[ "$RET_MAIN" = 1 ]]
       then
           PROGRESSION="PREVIOUS"
@@ -524,6 +526,7 @@ process_yad_formchoices(){
     SAVECHOICE="$(echo "$NEW_METADATA" | cut -d '|' -f14)"
     RENAMECHOICE="$(echo "$NEW_METADATA" | cut -d '|' -f15)"
     DUPLICATECHOICE="$(echo "$NEW_METADATA" | cut -d '|' -f16)"
+    OCRCHOICE="$(echo "$NEW_METADATA" | cut -d '|' -f12)"
     MODIFYDATE="$(date +"%Y:%m:%d %H:%M:%S")"
     if [[ "$YEAR" = "0" ]]; then
       CREATEDATE=""
@@ -541,7 +544,7 @@ read_metadata() {
     "$FILE" > "$PROGPIPE"
 
     # https://stackoverflow.com/questions/7997399/bash-script-to-check-pdfs-are-ocrd
-    if [ -f $(which pdffonts) ];then 
+    if [ "$OCRPOSSIBLE" == "TRUE" ];then
         MYFONTS=$(pdffonts -l 5 "${FILE}" | tail -n +3 | cut -d' ' -f1 | sort | uniq)
         if [ "$MYFONTS" = '' ] || [ "$MYFONTS" = '[none]' ]; then
             echo "FALSE" > "$OCRPIPE"
@@ -551,8 +554,6 @@ read_metadata() {
     else
         echo "UNKNOWN" > "$OCRPIPE"
     fi
-
-
 }
 
 print_original_metadata() {
@@ -578,6 +579,11 @@ evaluate_original_metadata() {
     SUBJECT_ORIGINAL="$(echo "$METADATA_PDF" | sed -n 's/Subject: //p')"
     KEYWORDS_ORIGINAL="$(echo "$METADATA_PDF" | sed -n 's/Keywords: //p')"
     PDF_IS_OCR="$( [[ -f "$OCRPIPE" ]] && cat "$OCRPIPE")"
+    if [ "$PDF_IS_OCR" == "TRUE" ];then
+        ALLOW_OCR=":RO"
+    else
+        ALLOW_OCR=""
+    fi
 }
 
 # Metadata output
@@ -603,6 +609,19 @@ update_metadata(){
     ( delete_metadata; write_metadata ) | gui_progress
     check_modify_success
     error_check_write
+}
+
+
+update_ocr(){
+    if [ ! -f $(which ocrmypdf) ];then
+        echo "# OCR chosen but ocrmypdf not available!"
+        echo "99" > "$ERRORPIPE1"        
+    else
+        echo "# Performing OCR"
+        ocrmypdf --skip-text --clean --rotate-pages "${FILE}" "${FILE}" 
+        echo "$?" > "$ERRORPIPE1"        
+    fi
+    
 }
 
 print_updated_metadata() {
@@ -763,6 +782,7 @@ main_iteration(){
     process_yad_formchoices
     print_updated_metadata
     [[ "$SAVECHOICE" = "TRUE" ]] && update_metadata
+    [[ "$OCRCHOICE" = "TRUE" ]] && update_ocr
     [[ "$SAVECHOICE" = "TRUE" && "$RENAMECHOICE" = "TRUE" ]] && update_filename
 }
 
