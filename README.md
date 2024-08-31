@@ -49,8 +49,9 @@ PDFMtEd Editor is an easy-to-use graphical metadata editor that supports viewing
 **Features:**
 
 - easily process multiple files and folders right from your file manager
-- preview your documents in your default PDF viewer and file manager before editing them
+- preview your documents in your default PDF viewer before editing them
 - rename files based on metadata
+- perform OCR on files by calling ocrmypdf
 
 ### PDFMtEd Inspector
 
@@ -88,28 +89,29 @@ The following instructions are provided for most Linux distributions.
 
 *Optional but recommended*: [sejda-console](https://github.com/torakiki/sejda/releases)
 
-#### Ubuntu 16.04 or lower
+#### Ubuntu
 
-Install all dependencies on Ubuntu with the following commands:
+Install all required dependencies on Ubuntu with the following commands:
 
-    sudo add-apt-repository ppa:webupd8team/y-ppa-manager
-    sudo apt-get update
-    sudo apt-get install yad libimage-exiftool-perl qpdf
-
+```sudo add-apt-repository ppa:webupd8team/y-ppa-manager
+sudo apt-get update
+sudo apt-get install yad libimage-exiftool-perl qpdf
+```
+    
 
 #### Most other Linux distribution based on Debian or Ubuntu
 
-    sudo apt install libimage-exiftool-perl yad qpdf
+    `sudo apt install libimage-exiftool-perl yad qpdf`
 
     If you do not have Gnome installed, you may need `gir1.2-gnomedesktop-3.0` and `gir1.2-gnomedesktop-4.0` for thumbnail generation.
 
 #### Fedora and most other Linux distribution based on Fedora
 
-    sudo dnf install perl-Image-ExifTool yad qpdf
+    `sudo dnf install perl-Image-ExifTool yad qpdf`
 
 #### Arch Linux or Manjaro
 
-    sudo pacman -S perl-image-exiftool yad qpdf
+    `sudo pacman -S perl-image-exiftool yad qpdf`
 
 #### Dependency breakdown
 
@@ -122,7 +124,17 @@ Install all dependencies on Ubuntu with the following commands:
 
 **Recommended:**
 
-- [Sejda](http://www.sejda.org/): extensible and configurable PDF manipulation layer library; used to restore broken PDF files; more reliable than qpdf in this, but unfortunately not available in any repository; please use the [debfile release](ttps://github.com/torakiki/sejda/releases) to install `sejda-console`
+- [Sejda](http://www.sejda.org/): extensible and configurable PDF manipulation layer library; used to restore broken PDF files; more reliable than qpdf in this, but unfortunately not available in any repository; please use the [debfile release](https://github.com/torakiki/sejda/releases) to install `sejda-console`
+
+These three are available in Debian, Ubuntu, and distros based on them with 
+
+    `sudo apt install ocrmypdf poppler-utils imagemagick`
+
+- [ocrmypdf](https://github.com/ocrmypdf/OCRmyPDF): Adds OCR text layer to scanned PDF files; used to OCR
+- [poppler-utils](https://poppler.freedesktop.org/): Precompiled command-line utilities (based on Poppler) for manipulating PDF files and converting them to other formats. Used for detecting text layer in PDFs and generating larger thumbnail.
+- [imagemagick](https://imagemagick.org/index.php): Image manipulation, used to resize and convert larger thumbnail.
+
+
 
 ### Installation
 
@@ -130,34 +142,25 @@ Install all dependencies on Ubuntu with the following commands:
 
 2. Clone this repository or download the latest zipfile and extract it
 
-3. `cd` to the cloned/extracted directory, e.g.:
+3. `cd` to the cloned/extracted directory, e.g.: `cd PDFMtEd`
 
-        cd PDFMtEd
-
-4. Run the provided installer:
-
-        sudo ./install.sh
+4. Run the provided installer: `sudo ./install.sh`
 
     (If your file manager supports custom scripts you can just copy the `PDFMtEd` folder to the default scripts path instead ([instructions for Nautilus](http://askubuntu.com/a/236415)))
 
-After the installation PDFMtEd Editor and Inspector should be available as entries in the *Open with* context menu:
+    After the installation PDFMtEd Editor and Inspector should be available as entries in the *Open with* context menu:
 
 ![file manager context menu with PDFMtEd entries](https://github.com/Glutanimate/PDFMtEd/blob/master/screenshots/pdfmted_usage.png)
 
-If you can't find the entries click on *Other application* (arrow) and navigate to *Show other applications*. You should be able to find the PDFMtEd launchers in the list. Double-click on *PDFMtEd  Inspector* to open the application. This will automatically add a context menu entry. Repeat the procedure for *PDFMtEd  Editor* and you are set.
+    If you can't find the entries click on *Other application* (arrow) and navigate to *Show other applications*. You should be able to find the PDFMtEd launchers in the list. Double-click on *PDFMtEd  Inspector* to open the application. This will automatically add a context menu entry. Repeat the procedure for *PDFMtEd  Editor* and you are set.
 
 ### Uninstall PDFMtEd
 
 Follow these steps to uninstall the PDFMted utilities:
 
-1. `cd` to the project directory, e.g.:
+1. `cd` to the project directory, e.g.: `cd PDFMtEd`
 
-        cd PDFMtEd
-
-2. Run `uninstall.sh` as root:
-
-        sudo ./uninstall.sh
-
+2. Run `uninstall.sh` as root: `sudo ./uninstall.sh`
 
 ## Usage
 
