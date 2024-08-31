@@ -128,6 +128,7 @@ sejda (recommended) or linearizing it with qpdf helps in these cases. Want to pr
 TEXT_NOTI_SUCCE1="Metadata succesfully updated."
 TEXT_NOTI_ERROR1="Post-processing failed."
 
+
 ############## FUNCTIONS #################
 
 # dependencies
@@ -382,7 +383,6 @@ gui_metadata_entry_multi(){
     "${MULTIDOC_FIELDS[@]}" \
     2> /dev/null)"
     RET_MAIN=$?
-    echo "${NEW_METADATA}"
     if [[ "$RET_MAIN" = 1 ]]
       then
           PROGRESSION="PREVIOUS"
@@ -617,11 +617,12 @@ update_ocr(){
         echo "# OCR chosen but ocrmypdf not available!"
         echo "99" > "$ERRORPIPE1"        
     else
+        gui_notify "Performing OCR"
         echo "# Performing OCR"
-        ocrmypdf --skip-text --clean --rotate-pages "${FILE}" "${FILE}" 
+        ocrmypdf --clean --rotate-pages "${FILE}" "${FILE}" 
         echo "$?" > "$ERRORPIPE1"        
     fi
-    
+    error_check_write
 }
 
 print_updated_metadata() {
