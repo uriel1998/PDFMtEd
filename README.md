@@ -44,7 +44,7 @@ PDFMtEd Editor is an easy-to-use graphical metadata editor that supports viewing
 
 **Screenshot**
 
-![screenshot of PDFMtEd Editor](https://github.com/Glutanimate/PDFMtEd/blob/master/screenshots/pdfmted-editor.png)
+![screenshot of PDFMtEd Editor](https://github.com/uriel1998/PDFMtEd/blob/7f96c7170e6fc66992635cb1bd94ba824ffa790d/screenshots/pdfmted-editor.png)
 
 **Features:**
 
