@@ -101,17 +101,17 @@ sudo apt-get install yad libimage-exiftool-perl qpdf
 
 #### Most other Linux distribution based on Debian or Ubuntu
 
-    `sudo apt install libimage-exiftool-perl yad qpdf`
+    sudo apt install libimage-exiftool-perl yad qpdf
 
-    If you do not have Gnome installed, you may need `gir1.2-gnomedesktop-3.0` and `gir1.2-gnomedesktop-4.0` for thumbnail generation.
+If you do not have Gnome installed, you may need `gir1.2-gnomedesktop-3.0` and `gir1.2-gnomedesktop-4.0` for thumbnail generation.
 
 #### Fedora and most other Linux distribution based on Fedora
 
-    `sudo dnf install perl-Image-ExifTool yad qpdf`
+    sudo dnf install perl-Image-ExifTool yad qpdf
 
 #### Arch Linux or Manjaro
 
-    `sudo pacman -S perl-image-exiftool yad qpdf`
+    sudo pacman -S perl-image-exiftool yad qpdf
 
 #### Dependency breakdown
 
@@ -128,7 +128,7 @@ sudo apt-get install yad libimage-exiftool-perl qpdf
 
 These three are available in Debian, Ubuntu, and distros based on them with 
 
-    `sudo apt install ocrmypdf poppler-utils imagemagick`
+    sudo apt install ocrmypdf poppler-utils imagemagick
 
 - [ocrmypdf](https://github.com/ocrmypdf/OCRmyPDF): Adds OCR text layer to scanned PDF files; used to OCR
 - [poppler-utils](https://poppler.freedesktop.org/): Precompiled command-line utilities (based on Poppler) for manipulating PDF files and converting them to other formats. Used for detecting text layer in PDFs and generating larger thumbnail.
@@ -152,7 +152,7 @@ These three are available in Debian, Ubuntu, and distros based on them with
 
 ![file manager context menu with PDFMtEd entries](https://github.com/Glutanimate/PDFMtEd/blob/master/screenshots/pdfmted_usage.png)
 
-    If you can't find the entries click on *Other application* (arrow) and navigate to *Show other applications*. You should be able to find the PDFMtEd launchers in the list. Double-click on *PDFMtEd  Inspector* to open the application. This will automatically add a context menu entry. Repeat the procedure for *PDFMtEd  Editor* and you are set.
+If you can't find the entries click on *Other application* (arrow) and navigate to *Show other applications*. You should be able to find the PDFMtEd launchers in the list. Double-click on *PDFMtEd  Inspector* to open the application. This will automatically add a context menu entry. Repeat the procedure for *PDFMtEd  Editor* and you are set.
 
 ### Uninstall PDFMtEd
 
@@ -166,8 +166,18 @@ Follow these steps to uninstall the PDFMted utilities:
 
 ### General usage
 
-1. Use your file manager to select one or more files/directories
-2. Choose the utility you want to launch from the *Open with* context menu
+#### From the File Manager
+
+    * Use your file manager to select one or more files/directories
+    * Choose the utility you want to launch from the *Open with* context menu
+    
+    ![file manager context menu with PDFMtEd entries](https://github.com/Glutanimate/PDFMtEd/blob/master/screenshots/pdfmted_usage.png)    
+
+#### From the command line
+
+`pdfmted-editor [file1] [file2] [file3]`
+
+This can be generated on the fly, e.g. `pdfmted-editor $(ls *.pdf)`
 
 ### PDFMtEd Editor
 
