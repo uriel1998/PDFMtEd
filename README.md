@@ -168,10 +168,10 @@ Follow these steps to uninstall the PDFMted utilities:
 
 #### From the File Manager
 
-    * Use your file manager to select one or more files/directories
-    * Choose the utility you want to launch from the *Open with* context menu
+* Use your file manager to select one or more files/directories
+* Choose the utility you want to launch from the *Open with* context menu
     
-    ![file manager context menu with PDFMtEd entries](https://github.com/Glutanimate/PDFMtEd/blob/master/screenshots/pdfmted_usage.png)    
+![file manager context menu with PDFMtEd entries](https://github.com/Glutanimate/PDFMtEd/blob/master/screenshots/pdfmted_usage.png)    
 
 #### From the command line
 
