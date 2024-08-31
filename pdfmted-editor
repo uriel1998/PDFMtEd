@@ -377,6 +377,7 @@ gui_metadata_entry_multi(){
     --field="":LBL "" \
     --field="$TEXT_CHCK_SAVECH":CHK "TRUE" \
     --field="$TEXT_CHCK_RENMFL":CHK "$RENAME_OPT" \
+    --field="<b>Has OCR layer?</b>:":RO "$PDF_IS_OCR"\    
     "${MULTIDOC_FIELDS[@]}" \
     2> /dev/null)"
     RET_MAIN=$?
@@ -538,6 +539,20 @@ read_metadata() {
     exiftool -e -S -PDF:Title -PDF:Author -PDF:Subject \
     -PDF:Keywords -PDF:CreateDate -PDF:ModifyDate \
     "$FILE" > "$PROGPIPE"
+
+    # https://stackoverflow.com/questions/7997399/bash-script-to-check-pdfs-are-ocrd
+    if [ -f $(which pdffonts) ];then 
+        MYFONTS=$(pdffonts -l 5 "${FILE}" | tail -n +3 | cut -d' ' -f1 | sort | uniq)
+        if [ "$MYFONTS" = '' ] || [ "$MYFONTS" = '[none]' ]; then
+            echo "FALSE" > "$OCRPIPE"
+        else 
+            echo "TRUE" > "$OCRPIPE"
+        fi
+    else
+        echo "UNKNOWN" > "$OCRPIPE"
+    fi
+
+
 }
 
 print_original_metadata() {
@@ -550,6 +565,7 @@ print_original_metadata() {
     echo "Modification date:    $MODIFYDATE_ORIGINAL"
     echo "Subject:              $SUBJECT_ORIGINAL"
     echo "Keywords:             $KEYWORDS_ORIGINAL"
+    echo "PDF is OCRed:         $PDF_IS_OCR"
 }
 
 evaluate_original_metadata() {
@@ -561,6 +577,7 @@ evaluate_original_metadata() {
     MODIFYDATE_ORIGINAL="$(echo "$METADATA_PDF" | sed -n 's/ModifyDate: //p')"
     SUBJECT_ORIGINAL="$(echo "$METADATA_PDF" | sed -n 's/Subject: //p')"
     KEYWORDS_ORIGINAL="$(echo "$METADATA_PDF" | sed -n 's/Keywords: //p')"
+    PDF_IS_OCR="$( [[ -f "$OCRPIPE" ]] && cat "$OCRPIPE")"
 }
 
 # Metadata output
@@ -787,6 +804,7 @@ trap "cleanup; exit" EXIT
 TOP_PID="$$"
 mkdir -p "$TMPDIR"
 PROGPIPE="$(mktemp -u --tmpdir="$TMPDIR" XXXXXXXX)"
+OCRPIPE="$(mktemp -u --tmpdir="$TMPDIR" XXXXXXXX)"
 ERRORPIPE1="$(mktemp -u --tmpdir="$TMPDIR" XXXXXXXX)"
 ERRORPIPE2="$(mktemp -u --tmpdir="$TMPDIR" XXXXXXXX)"
 
